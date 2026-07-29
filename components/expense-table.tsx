@@ -30,6 +30,10 @@ interface ExpenseTableProps {
 
 export function ExpenseTable({ expenses, onEdit, onRefresh, onView, }: ExpenseTableProps) {
   const [deleting, setDeleting] = useState<string | null>(null)
+  const truncateText = (text: string | null, length = 23) => {
+  if (!text) return '-'
+  return text.length > length ? `${text.substring(0, length)}...` : text
+}
   const totalAmount = expenses.reduce(
   (sum, expense) => sum + Number(expense.amount || 0),
   0
@@ -86,12 +90,16 @@ export function ExpenseTable({ expenses, onEdit, onRefresh, onView, }: ExpenseTa
                 </td>
                 <td className="px-4 py-3 text-foreground font-medium">{expense.name}</td>
                 <td className="px-4 py-3 text-foreground">{expense.paidOn || '-'}</td>
-                <td className="px-4 py-3 text-foreground max-w-xs">
-                  <p className="truncate">{expense.instructions || '-'}</p>
+                <td className="px-4 py-3 text-foreground max-w-[180px]">
+                  <p title={expense.instructions || ''}>
+                 {truncateText(expense.instructions)}
+                  </p>
                 </td>
                 <td className="px-4 py-3 text-foreground">{expense.accountNumber || '-'}</td>
-                <td className="px-4 py-3 text-foreground max-w-xs">
-                  <p className="truncate">{expense.calculations || '-'}</p>
+                <td className="px-4 py-3 text-foreground max-w-[180px]">
+                  <p title={expense.calculations || ''}>
+                  {truncateText(expense.calculations)}
+                  </p>
                 </td>
                 <td className="px-4 py-3 text-right font-semibold text-primary"> {Number(expense.amount || 0).toLocaleString()}</td>
                 <td className="px-4 py-3">
