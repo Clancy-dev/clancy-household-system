@@ -1,0 +1,150 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  ADMIN
+  USER
+}
+
+model User {
+  id                                                String            @id @default(cuid())
+  email                                             String            @unique
+  password                                          String
+  avatar                                            String?
+  role                                              Role              @default(USER)
+  createdAt                                         DateTime          @default(now())
+  updatedAt                                         DateTime          @updatedAt
+  emailVerified                                     DateTime?
+  firstName                                         String
+  lastName                                          String
+  resetToken                                        String?
+  resetTokenExpiry                                  DateTime?
+  accounts                                          Account[]
+  activities                                        Activity[]
+  sessions                                          Session[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  userId       String
+  expires      DateTime
+  sessionToken String   @unique
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Activity {
+  id        String   @id @default(cuid())
+  userId    String
+  action    String
+  metadata  Json?
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model Category {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  description String?
+  color     String   @default("#3b82f6")
+  icon      String?
+  
+  // Relations
+  expenses  Expense[]
+  
+  // Soft delete
+  isDeleted Boolean   @default(false)
+  deletedAt DateTime?
+  
+  // Timestamps
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([isDeleted])
+  @@index([createdAt])
+}
+
+model Expense {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  image       String?  // Cloudinary URL
+  
+  // Category relation
+  categoryId  String
+  category    Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  
+  // Expense details
+  amount Int
+  duration    String?  // e.g., "Whole month", "Weekly", "Daily"
+  paidOn      String?  // e.g., "Every 1st of the month"
+  instructions String?
+  accountNumber String?
+  calculations String?
+  
+  // Soft delete
+  isDeleted   Boolean  @default(false)
+  deletedAt   DateTime?
+  
+  // Timestamps
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([categoryId])
+  @@index([isDeleted])
+  @@index([createdAt])
+}
+
+
+model MaintenanceItem {
+  id              String   @id @default(cuid())
+  name            String
+  description     String?
+  image           String?  // Cloudinary URL
+  
+  // Maintenance category
+  category        String
+  
+  // Maintenance details
+  cost            Int
+  expectedDate    DateTime?
+  completedDate   DateTime?
+  status          String   @default("pending") // pending, in-progress, completed
+  notes           String?
+  
+  // Soft delete
+  isDeleted       Boolean  @default(false)
+  deletedAt       DateTime?
+  
+  // Timestamps
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([category])
+  @@index([status])
+  @@index([isDeleted])
+  @@index([createdAt])
+}
