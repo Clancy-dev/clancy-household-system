@@ -15,6 +15,7 @@ export const metadata: Metadata = {
 
   keywords: [
     "Clancy's Household System",
+    "Clancy Household System",
     "Household Management System",
     "Household Expense Tracker",
     "Personal Finance Management System",
