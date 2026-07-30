@@ -21,7 +21,7 @@ export async function getCategories(): Promise<ActionResponse<any[]>> {
           select: { expenses: { where: { isDeleted: false } } },
         },
       },
-      orderBy: { createdAt: "desc" },
+      orderBy: { createdAt: "asc" },
     });
 
     const categoriesWithTotals = await Promise.all(

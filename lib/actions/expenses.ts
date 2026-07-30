@@ -21,7 +21,7 @@ export async function getExpenses(): Promise<ActionResponse<any[]>> {
       include: {
         category: true,
       },
-      orderBy: { createdAt: "asc" },
+      orderBy: { createdAt: "desc" },
     });
 
     return {
