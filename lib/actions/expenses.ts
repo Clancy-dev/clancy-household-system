@@ -70,7 +70,7 @@ export async function getExpensesByCategory(categoryId: string): Promise<ActionR
       include: {
         category: true,
       },
-      orderBy: { createdAt: "desc" },
+      orderBy: { createdAt: "asc" },
     });
 
     return {
